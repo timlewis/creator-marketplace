@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "pnpm -r test",
+    "test": "pnpm -r --workspace-concurrency=1 test",
     "test:unit": "pnpm --filter @marketplace/core test",
     "db:migrate": "pnpm --filter @marketplace/db db:migrate",
     "db:seed": "pnpm --filter @marketplace/db db:seed",
