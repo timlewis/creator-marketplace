@@ -47,6 +47,10 @@ The integration tests need a database. They default to
 They run sequentially across the workspace because the API and worker suites
 share one database and truncate between tests.
 
+Deploying it is covered separately in [`deploy/README.md`](deploy/README.md),
+which has both targets: the Helm chart, and the hosted demo on Fly plus
+Cloudflare Pages.
+
 ---
 
 ## The 60-second demo
