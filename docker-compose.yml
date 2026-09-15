@@ -1,3 +1,8 @@
+# The whole system, one command: `docker compose up --build`.
+#
+# Ordering is expressed through health and completion conditions rather than
+# sleeps, so the stack comes up the same way on a cold laptop as on a fast one.
+
 services:
   db:
     image: postgres:17-alpine
@@ -14,6 +19,64 @@ services:
       interval: 3s
       timeout: 3s
       retries: 20
+
+  # Migrations run as their own step, never on app boot: migrating from every
+  # starting replica means N concurrent migrators during a rollout.
+  migrate:
+    build: { context: ., target: api }
+    command: ['node', 'packages/db/dist/migrate.js']
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/marketplace
+    depends_on:
+      db: { condition: service_healthy }
+    restart: 'no'
+
+  seed:
+    build: { context: ., target: api }
+    command: ['node', 'packages/db/dist/seed.js']
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/marketplace
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    restart: 'no'
+
+  api:
+    build: { context: ., target: api }
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/marketplace
+      PORT: '3000'
+      LOG_LEVEL: info
+      # Exposes the demo deadline control. Off by default everywhere else.
+      ENABLE_DEV_ROUTES: 'true'
+    ports:
+      - '3000:3000'
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://localhost:3000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  worker:
+    build: { context: ., target: worker }
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/marketplace
+      LOG_LEVEL: info
+      # Short interval so a reviewer sees an auction close shortly after its
+      # deadline instead of waiting out a production-shaped schedule.
+      CLOSE_INTERVAL_MS: '10000'
+    ports:
+      - '3001:3001'
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+
+  web:
+    build: { context: ., target: web }
+    ports:
+      - '8080:8080'
+    depends_on:
+      api: { condition: service_healthy }
 
 volumes:
   db-data:
