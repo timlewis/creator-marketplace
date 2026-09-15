@@ -6,11 +6,7 @@
  */
 export type { BidDto, CampaignDto, CreatorDto } from './serializers.js';
 export type { MatchDto, CampaignDetail } from './services/matching.js';
-export type {
-  BidOutcomeDetail,
-  BidPreview,
-  BidWithContext,
-} from './services/bidding.js';
+export type { BidOutcomeDetail, BidPreview, BidWithContext } from './services/bidding.js';
 export type { ErrorBody } from './errors.js';
 
 export type {

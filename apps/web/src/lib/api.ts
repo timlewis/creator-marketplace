@@ -72,8 +72,10 @@ export const api = {
   previewBid: (campaignId: string, creatorId: string, amountCents: number) =>
     post<BidPreview>(`/api/campaigns/${campaignId}/bid-preview`, { creatorId, amountCents }),
 
-  placeBid: (campaignId: string, input: { creatorId: string; amountCents: number; message?: string }) =>
-    post<{ bid: BidDto }>(`/api/campaigns/${campaignId}/bids`, input),
+  placeBid: (
+    campaignId: string,
+    input: { creatorId: string; amountCents: number; message?: string },
+  ) => post<{ bid: BidDto }>(`/api/campaigns/${campaignId}/bids`, input),
 
   myBids: (creatorId: string) =>
     request<{ bids: BidWithContext[] }>(`/api/creators/${creatorId}/bids`),

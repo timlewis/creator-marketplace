@@ -1,10 +1,13 @@
+import type {
+  BidDto,
+  BidPreview,
+  BidWithContext,
+  CampaignDto,
+  ErrorBody,
+  MatchDto,
+} from '@marketplace/api';
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
-import {
-  createApiHarness,
-  insertCampaign,
-  insertCreator,
-  truncateAll,
-} from './helpers.js';
+import { createApiHarness, insertCampaign, insertCreator, truncateAll } from './helpers.js';
 import type { ApiHarness } from './helpers.js';
 
 const harness: ApiHarness = await createApiHarness();
@@ -18,7 +21,16 @@ afterAll(async () => {
   await harness.close();
 });
 
-const json = (response: { body: string }): any => JSON.parse(response.body);
+/**
+ * Read a response body as the shape the server promises.
+ *
+ * Typed against the DTOs the API exports rather than `any`, so a change to the
+ * wire contract breaks these tests at compile time instead of at assertion time.
+ */
+const json = <T>(response: { body: string }): T => JSON.parse(response.body) as T;
+
+type Matches = { matches: MatchDto[] };
+type Bids = { bids: BidWithContext[] };
 
 describe('GET /api/creators/:id/campaigns', () => {
   it('ranks eligible campaigns by fit and keeps ineligible ones visible with a reason', async () => {
@@ -30,14 +42,14 @@ describe('GET /api/creators/:id/campaigns', () => {
     await insertCampaign(db, { title: 'Unrelated', targetGenre: 'finance' });
     await insertCampaign(db, { title: 'Too big', targetGenre: 'fitness', minFollowers: 500_000 });
 
-    const body = json(await app.inject({ url: `/api/creators/${creatorId}/campaigns` }));
-    const titles = body.matches.map((m: any) => m.campaign.title);
+    const body = json<Matches>(await app.inject({ url: `/api/creators/${creatorId}/campaigns` }));
+    const titles = body.matches.map((m) => m.campaign.title);
 
     expect(titles).toEqual(['Perfect', 'Unrelated', 'Too big']);
 
-    const locked = body.matches.find((m: any) => m.campaign.title === 'Too big');
+    const locked = body.matches.find((m) => m.campaign.title === 'Too big')!;
     expect(locked.eligible).toBe(false);
-    expect(locked.ineligibility.message).toContain('500,000 followers');
+    expect(locked.ineligibility?.message).toContain('500,000 followers');
     // Still scored, so the card can say what they would be worth here.
     expect(locked.fit.score).toBeGreaterThan(0);
   });
@@ -46,9 +58,9 @@ describe('GET /api/creators/:id/campaigns', () => {
     const creatorId = await insertCreator(db);
     await insertCampaign(db);
 
-    const body = json(await app.inject({ url: `/api/creators/${creatorId}/campaigns` }));
-    const { fit } = body.matches[0];
-    const summed = fit.components.reduce((total: number, c: any) => total + c.points, 0);
+    const body = json<Matches>(await app.inject({ url: `/api/creators/${creatorId}/campaigns` }));
+    const { fit } = body.matches[0]!;
+    const summed = fit.components.reduce((total, c) => total + c.points, 0);
 
     expect(fit.components).toHaveLength(3);
     expect(summed).toBe(fit.score);
@@ -59,7 +71,7 @@ describe('GET /api/creators/:id/campaigns', () => {
       url: '/api/creators/00000000-0000-4000-8000-000000000000/campaigns',
     });
     expect(response.statusCode).toBe(404);
-    expect(json(response).error.code).toBe('NOT_FOUND');
+    expect(json<ErrorBody>(response).error.code).toBe('NOT_FOUND');
   });
 });
 
@@ -75,8 +87,11 @@ describe('POST /api/campaigns/:id/bids', () => {
     });
 
     expect(response.statusCode).toBe(200);
-    expect(json(response).bid).toMatchObject({ status: 'pending', amountCents: 250_000 });
-    expect(json(response).bid.fitScore).toBeGreaterThan(0);
+    expect(json<{ bid: BidDto }>(response).bid).toMatchObject({
+      status: 'pending',
+      amountCents: 250_000,
+    });
+    expect(json<{ bid: BidDto }>(response).bid.fitScore).toBeGreaterThan(0);
   });
 
   it('replaces an existing bid rather than creating a second one', async () => {
@@ -91,13 +106,13 @@ describe('POST /api/campaigns/:id/bids', () => {
         payload: { creatorId, amountCents },
       });
 
-    const first = json(await place(250_000)).bid;
-    const second = json(await place(180_000)).bid;
+    const first = json<{ bid: BidDto }>(await place(250_000)).bid;
+    const second = json<{ bid: BidDto }>(await place(180_000)).bid;
 
     expect(second.id).toBe(first.id);
     expect(second.amountCents).toBe(180_000);
 
-    const list = json(await app.inject({ url: `/api/creators/${creatorId}/bids` }));
+    const list = json<Bids>(await app.inject({ url: `/api/creators/${creatorId}/bids` }));
     expect(list.bids).toHaveLength(1);
   });
 
@@ -114,7 +129,7 @@ describe('POST /api/campaigns/:id/bids', () => {
     });
 
     expect(response.statusCode).toBe(409);
-    expect(json(response).error.code).toBe('BIDDING_CLOSED');
+    expect(json<ErrorBody>(response).error.code).toBe('BIDDING_CLOSED');
   });
 
   it('refuses a bid from a creator below the follower minimum', async () => {
@@ -128,8 +143,8 @@ describe('POST /api/campaigns/:id/bids', () => {
     });
 
     expect(response.statusCode).toBe(422);
-    expect(json(response).error.code).toBe('BELOW_MIN_FOLLOWERS');
-    expect(json(response).error.message).toContain('50,000');
+    expect(json<ErrorBody>(response).error.code).toBe('BELOW_MIN_FOLLOWERS');
+    expect(json<ErrorBody>(response).error.message).toContain('50,000');
   });
 
   it('refuses a bid larger than the entire campaign budget', async () => {
@@ -145,7 +160,7 @@ describe('POST /api/campaigns/:id/bids', () => {
     });
 
     expect(response.statusCode).toBe(422);
-    expect(json(response).error.code).toBe('BID_EXCEEDS_BUDGET');
+    expect(json<ErrorBody>(response).error.code).toBe('BID_EXCEEDS_BUDGET');
   });
 
   it('rejects a malformed bid with the offending field named', async () => {
@@ -159,7 +174,9 @@ describe('POST /api/campaigns/:id/bids', () => {
     });
 
     expect(response.statusCode).toBe(400);
-    expect(json(response).error.details[0].field).toBe('amountCents');
+    expect((json<ErrorBody>(response).error.details as Array<{ field: string }>)[0]?.field).toBe(
+      'amountCents',
+    );
   });
 });
 
@@ -181,7 +198,7 @@ describe('POST /api/campaigns/:id/bid-preview', () => {
           url: `/api/campaigns/${campaignId}/bid-preview`,
           payload: { creatorId, amountCents },
         })
-        .then(json);
+        .then((r) => json<BidPreview>(r));
 
     // Same fit as the rival, so undercutting wins and overpaying loses. This is
     // the monotonicity the greedy rule guarantees, visible to the creator.
@@ -200,7 +217,7 @@ describe('POST /api/campaigns/:id/bid-preview', () => {
       payload: { creatorId, amountCents: 40_000 },
     });
 
-    const preview = json(
+    const preview = json<BidPreview>(
       await app.inject({
         method: 'POST',
         url: `/api/campaigns/${campaignId}/bid-preview`,
@@ -236,7 +253,7 @@ describe('dev routes', () => {
       });
 
       expect(response.statusCode).toBe(200);
-      const deadline = new Date(json(response).campaign.biddingDeadline);
+      const deadline = new Date(json<{ campaign: CampaignDto }>(response).campaign.biddingDeadline);
       expect(deadline.getTime()).toBeLessThan(Date.now());
     } finally {
       await dev.close();
@@ -246,10 +263,14 @@ describe('dev routes', () => {
 
 describe('health', () => {
   it('reports liveness without touching the database', async () => {
-    expect(json(await app.inject({ url: '/healthz' }))).toEqual({ status: 'ok' });
+    expect(json<{ status: string }>(await app.inject({ url: '/healthz' }))).toEqual({
+      status: 'ok',
+    });
   });
 
   it('reports readiness by checking the database', async () => {
-    expect(json(await app.inject({ url: '/readyz' }))).toEqual({ status: 'ready' });
+    expect(json<{ status: string }>(await app.inject({ url: '/readyz' }))).toEqual({
+      status: 'ready',
+    });
   });
 });

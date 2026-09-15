@@ -1,6 +1,13 @@
 import { formatCount, formatMultiple, formatRate } from './format.js';
 import { genreLabel, relateGenres } from './genres.js';
-import type { CampaignRequirements, CreatorProfile, FitComponent, FitScore, Ineligibility, MatchResult } from './types.js';
+import type {
+  CampaignRequirements,
+  CreatorProfile,
+  FitComponent,
+  FitScore,
+  Ineligibility,
+  MatchResult,
+} from './types.js';
 
 /**
  * Point budget per scoring component. Sums to 100.

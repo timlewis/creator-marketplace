@@ -5,8 +5,7 @@ export const queryKeys = {
   meta: ['meta'] as const,
   creators: ['creators'] as const,
   matches: (creatorId: string) => ['matches', creatorId] as const,
-  campaign: (campaignId: string, creatorId: string) =>
-    ['campaign', campaignId, creatorId] as const,
+  campaign: (campaignId: string, creatorId: string) => ['campaign', campaignId, creatorId] as const,
   bids: (creatorId: string) => ['bids', creatorId] as const,
 };
 

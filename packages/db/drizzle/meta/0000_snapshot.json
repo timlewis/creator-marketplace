@@ -145,12 +145,8 @@
           "name": "bids_campaign_id_campaigns_id_fk",
           "tableFrom": "bids",
           "tableTo": "campaigns",
-          "columnsFrom": [
-            "campaign_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["campaign_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -158,12 +154,8 @@
           "name": "bids_creator_id_creators_id_fk",
           "tableFrom": "bids",
           "tableTo": "creators",
-          "columnsFrom": [
-            "creator_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["creator_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -235,12 +227,8 @@
           "name": "campaign_closures_campaign_id_campaigns_id_fk",
           "tableFrom": "campaign_closures",
           "tableTo": "campaigns",
-          "columnsFrom": [
-            "campaign_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["campaign_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -494,19 +482,12 @@
     "public.bid_status": {
       "name": "bid_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "won",
-        "lost"
-      ]
+      "values": ["pending", "won", "lost"]
     },
     "public.campaign_status": {
       "name": "campaign_status",
       "schema": "public",
-      "values": [
-        "open",
-        "closed"
-      ]
+      "values": ["open", "closed"]
     },
     "public.genre": {
       "name": "genre",
@@ -527,11 +508,7 @@
     "public.loss_reason": {
       "name": "loss_reason",
       "schema": "public",
-      "values": [
-        "over_budget",
-        "budget_exhausted",
-        "slots_filled"
-      ]
+      "values": ["over_budget", "budget_exhausted", "slots_filled"]
     }
   },
   "schemas": {},

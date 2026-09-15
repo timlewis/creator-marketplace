@@ -28,7 +28,9 @@ function Outcome({ entry }: { entry: BidWithContext }) {
       <p className="text-body text-won">
         Won at {formatCents(bid.amountCents)}
         {outcome?.rank ? ` — you ranked #${outcome.rank}` : ''}
-        {outcome ? ` of ${outcome.winnerCount} winner${outcome.winnerCount === 1 ? '' : 's'}.` : '.'}
+        {outcome
+          ? ` of ${outcome.winnerCount} winner${outcome.winnerCount === 1 ? '' : 's'}.`
+          : '.'}
       </p>
     );
   }

@@ -278,34 +278,139 @@ export const SEED_CAMPAIGNS: SeedCampaign[] = [
  * needs campaigns still open to her.
  */
 export const SEED_BIDS: SeedBid[] = [
-  { campaignKey: 'spring-strength', creatorHandle: 'trail-and-error', amountDollars: 3_800, message: 'Six week series, one post per week.' },
-  { campaignKey: 'spring-strength', creatorHandle: 'kettlebell-kev', amountDollars: 4_200, message: 'Can film the full programme start to finish.' },
-  { campaignKey: 'spring-strength', creatorHandle: 'slow-kitchen', amountDollars: 2_900, message: 'Meal prep angle to pair with the training plan.' },
+  {
+    campaignKey: 'spring-strength',
+    creatorHandle: 'trail-and-error',
+    amountDollars: 3_800,
+    message: 'Six week series, one post per week.',
+  },
+  {
+    campaignKey: 'spring-strength',
+    creatorHandle: 'kettlebell-kev',
+    amountDollars: 4_200,
+    message: 'Can film the full programme start to finish.',
+  },
+  {
+    campaignKey: 'spring-strength',
+    creatorHandle: 'slow-kitchen',
+    amountDollars: 2_900,
+    message: 'Meal prep angle to pair with the training plan.',
+  },
 
-  { campaignKey: 'protein-bar', creatorHandle: 'kettlebell-kev', amountDollars: 3_500, message: 'Blind taste test against two competitors.' },
-  { campaignKey: 'protein-bar', creatorHandle: 'trail-and-error', amountDollars: 4_500, message: 'Long run fuelling test, 30km.' },
+  {
+    campaignKey: 'protein-bar',
+    creatorHandle: 'kettlebell-kev',
+    amountDollars: 3_500,
+    message: 'Blind taste test against two competitors.',
+  },
+  {
+    campaignKey: 'protein-bar',
+    creatorHandle: 'trail-and-error',
+    amountDollars: 4_500,
+    message: 'Long run fuelling test, 30km.',
+  },
 
-  { campaignKey: 'dev-tooling', creatorHandle: 'dev-null-dan', amountDollars: 14_000, message: 'Full migration walkthrough on a real codebase.' },
-  { campaignKey: 'dev-tooling', creatorHandle: 'ship-it-sana', amountDollars: 9_500, message: 'Build a side project with it, filmed end to end.' },
+  {
+    campaignKey: 'dev-tooling',
+    creatorHandle: 'dev-null-dan',
+    amountDollars: 14_000,
+    message: 'Full migration walkthrough on a real codebase.',
+  },
+  {
+    campaignKey: 'dev-tooling',
+    creatorHandle: 'ship-it-sana',
+    amountDollars: 9_500,
+    message: 'Build a side project with it, filmed end to end.',
+  },
 
-  { campaignKey: 'clean-beauty', creatorHandle: 'glow-by-ines', amountDollars: 3_200, message: 'Ingredient breakdown plus four week trial.' },
-  { campaignKey: 'clean-beauty', creatorHandle: 'two-bags-only', amountDollars: 3_800, message: 'Travel-sized routine angle.' },
+  {
+    campaignKey: 'clean-beauty',
+    creatorHandle: 'glow-by-ines',
+    amountDollars: 3_200,
+    message: 'Ingredient breakdown plus four week trial.',
+  },
+  {
+    campaignKey: 'clean-beauty',
+    creatorHandle: 'two-bags-only',
+    amountDollars: 3_800,
+    message: 'Travel-sized routine angle.',
+  },
 
-  { campaignKey: 'handheld-console', creatorHandle: 'pixel-runback', amountDollars: 22_000, message: 'Launch day stream, four hours.' },
+  {
+    campaignKey: 'handheld-console',
+    creatorHandle: 'pixel-runback',
+    amountDollars: 22_000,
+    message: 'Launch day stream, four hours.',
+  },
 
-  { campaignKey: 'weeknight-meal', creatorHandle: 'slow-kitchen', amountDollars: 1_400, message: 'Four recipes, one shoot day.' },
-  { campaignKey: 'weeknight-meal', creatorHandle: 'maya-lifts', amountDollars: 1_800, message: 'High protein variations on each recipe.' },
-  { campaignKey: 'weeknight-meal', creatorHandle: 'glow-by-ines', amountDollars: 1_600, message: 'Skin-friendly swaps angle.' },
+  {
+    campaignKey: 'weeknight-meal',
+    creatorHandle: 'slow-kitchen',
+    amountDollars: 1_400,
+    message: 'Four recipes, one shoot day.',
+  },
+  {
+    campaignKey: 'weeknight-meal',
+    creatorHandle: 'maya-lifts',
+    amountDollars: 1_800,
+    message: 'High protein variations on each recipe.',
+  },
+  {
+    campaignKey: 'weeknight-meal',
+    creatorHandle: 'glow-by-ines',
+    amountDollars: 1_600,
+    message: 'Skin-friendly swaps angle.',
+  },
 
-  { campaignKey: 'carry-on', creatorHandle: 'two-bags-only', amountDollars: 6_500, message: 'Three trips across two months.' },
-  { campaignKey: 'carry-on', creatorHandle: 'pixel-runback', amountDollars: 7_200, message: 'Convention travel, heavy use.' },
+  {
+    campaignKey: 'carry-on',
+    creatorHandle: 'two-bags-only',
+    amountDollars: 6_500,
+    message: 'Three trips across two months.',
+  },
+  {
+    campaignKey: 'carry-on',
+    creatorHandle: 'pixel-runback',
+    amountDollars: 7_200,
+    message: 'Convention travel, heavy use.',
+  },
 
-  { campaignKey: 'budgeting-app', creatorHandle: 'ledger-lines', amountDollars: 1_600, message: 'Setup walkthrough with my own real numbers.' },
-  { campaignKey: 'budgeting-app', creatorHandle: 'dev-null-dan', amountDollars: 2_200, message: 'Engineer salary budgeting angle.' },
+  {
+    campaignKey: 'budgeting-app',
+    creatorHandle: 'ledger-lines',
+    amountDollars: 1_600,
+    message: 'Setup walkthrough with my own real numbers.',
+  },
+  {
+    campaignKey: 'budgeting-app',
+    creatorHandle: 'dev-null-dan',
+    amountDollars: 2_200,
+    message: 'Engineer salary budgeting angle.',
+  },
 
-  { campaignKey: 'studio-monitor', creatorHandle: 'reverb-room', amountDollars: 5_500, message: 'A/B against my current monitors in a finished mix.' },
+  {
+    campaignKey: 'studio-monitor',
+    creatorHandle: 'reverb-room',
+    amountDollars: 5_500,
+    message: 'A/B against my current monitors in a finished mix.',
+  },
 
-  { campaignKey: 'athleisure-capsule', creatorHandle: 'glow-by-ines', amountDollars: 4_800, message: 'Styling series, six looks.' },
-  { campaignKey: 'athleisure-capsule', creatorHandle: 'two-bags-only', amountDollars: 5_000, message: 'Packing the capsule into a carry-on.' },
-  { campaignKey: 'athleisure-capsule', creatorHandle: 'maya-lifts', amountDollars: 5_200, message: 'Gym-to-street transitions.' },
+  {
+    campaignKey: 'athleisure-capsule',
+    creatorHandle: 'glow-by-ines',
+    amountDollars: 4_800,
+    message: 'Styling series, six looks.',
+  },
+  {
+    campaignKey: 'athleisure-capsule',
+    creatorHandle: 'two-bags-only',
+    amountDollars: 5_000,
+    message: 'Packing the capsule into a carry-on.',
+  },
+  {
+    campaignKey: 'athleisure-capsule',
+    creatorHandle: 'maya-lifts',
+    amountDollars: 5_200,
+    message: 'Gym-to-street transitions.',
+  },
 ];

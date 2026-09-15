@@ -37,7 +37,11 @@ export function registerCampaignRoutes(app: FastifyInstance, db: Db): void {
   app.post('/api/campaigns/:id/bid-preview', async (request) => {
     const { id } = parse(CampaignParams, request.params);
     const body = parse(PreviewBody, request.body);
-    return previewBid(db, { campaignId: id, creatorId: body.creatorId, amountCents: body.amountCents });
+    return previewBid(db, {
+      campaignId: id,
+      creatorId: body.creatorId,
+      amountCents: body.amountCents,
+    });
   });
 
   app.post('/api/campaigns/:id/bids', async (request, reply) => {

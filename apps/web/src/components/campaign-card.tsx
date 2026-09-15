@@ -45,7 +45,11 @@ export function CampaignCard({ match }: { match: MatchDto }) {
               <BidStatusChip match={match} />
             </div>
 
-            <h2 className={eligible ? 'text-title font-semibold' : 'text-title font-semibold text-muted'}>
+            <h2
+              className={
+                eligible ? 'text-title font-semibold' : 'text-title font-semibold text-muted'
+              }
+            >
               {campaign.title}
             </h2>
 
@@ -97,9 +101,7 @@ export function CampaignCard({ match }: { match: MatchDto }) {
           </div>
         </div>
 
-        {showBreakdown ? (
-          <FitBreakdown fit={fit} className="border-t border-border pt-4" />
-        ) : null}
+        {showBreakdown ? <FitBreakdown fit={fit} className="border-t border-border pt-4" /> : null}
       </div>
     </Card>
   );

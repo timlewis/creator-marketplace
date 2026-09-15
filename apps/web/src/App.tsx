@@ -21,10 +21,7 @@ export function App() {
   return (
     <Layout>
       <Routes>
-        <Route
-          path="/"
-          element={<Navigate to={creatorId ? '/matches' : '/creators'} replace />}
-        />
+        <Route path="/" element={<Navigate to={creatorId ? '/matches' : '/creators'} replace />} />
         <Route path="/creators" element={<CreatorPickerPage />} />
         <Route
           path="/matches"

@@ -14,10 +14,7 @@ const cx = (...parts: Array<string | false | null | undefined>): string =>
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx(
-        'rounded-[var(--radius-card)] border border-border bg-surface',
-        className,
-      )}
+      className={cx('rounded-[var(--radius-card)] border border-border bg-surface', className)}
       {...props}
     />
   );
@@ -36,12 +33,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md';
 }
 
-export function Button({
-  variant = 'primary',
-  size = 'md',
-  className,
-  ...props
-}: ButtonProps) {
+export function Button({ variant = 'primary', size = 'md', className, ...props }: ButtonProps) {
   return (
     <button
       className={cx(

@@ -33,7 +33,10 @@ function logReport(logger: pino.Logger, report: CloseReport): void {
   }
 
   for (const failure of report.failures) {
-    logger.error({ campaignId: failure.campaignId, err: failure.error }, 'Failed to close campaign');
+    logger.error(
+      { campaignId: failure.campaignId, err: failure.error },
+      'Failed to close campaign',
+    );
   }
 
   // Quiet when there is nothing to do: a scheduled job that logs every idle

@@ -2,13 +2,7 @@ import { bids, campaignClosures, campaigns } from '@marketplace/db';
 import { eq } from 'drizzle-orm';
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { closeDueCampaigns, countOverdueCampaigns } from '../src/closing.js';
-import {
-  createTestDb,
-  insertBid,
-  insertCampaign,
-  insertCreator,
-  truncateAll,
-} from './helpers.js';
+import { createTestDb, insertBid, insertCampaign, insertCreator, truncateAll } from './helpers.js';
 
 const harness = createTestDb();
 const { db } = harness;

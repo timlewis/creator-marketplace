@@ -28,7 +28,8 @@ export function suggestBidRange(
   const slots = Math.max(1, campaign.maxWinners);
   const slotBudgetCents = Math.floor(campaign.budgetCents / slots);
 
-  const fitFactor = MIN_FIT_FACTOR + FIT_FACTOR_RANGE * (Math.min(100, Math.max(0, fitScore)) / 100);
+  const fitFactor =
+    MIN_FIT_FACTOR + FIT_FACTOR_RANGE * (Math.min(100, Math.max(0, fitScore)) / 100);
   const midCents = Math.max(1, Math.round(slotBudgetCents * fitFactor));
 
   const lowCents = Math.max(1, Math.round(midCents * 0.8));

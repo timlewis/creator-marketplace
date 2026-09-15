@@ -8,27 +8,38 @@ const pointsFor = (key: FitComponentKey, ...args: Parameters<typeof scoreMatch>)
 
 describe('fit scoring: genre', () => {
   it('awards full marks for an exact genre match', () => {
-    expect(pointsFor('genre', creator({ genre: 'fitness' }), campaign({ targetGenre: 'fitness' })))
-      .toBe(FIT_WEIGHTS.genre);
+    expect(
+      pointsFor('genre', creator({ genre: 'fitness' }), campaign({ targetGenre: 'fitness' })),
+    ).toBe(FIT_WEIGHTS.genre);
   });
 
   it('awards partial credit for an adjacent genre', () => {
     // A beauty creator is a credible fit for a fashion brief, so they should
     // surface above unrelated creators rather than being lumped in with them.
-    expect(pointsFor('genre', creator({ genre: 'beauty' }), campaign({ targetGenre: 'fashion' })))
-      .toBe(24);
+    expect(
+      pointsFor('genre', creator({ genre: 'beauty' }), campaign({ targetGenre: 'fashion' })),
+    ).toBe(24);
   });
 
   it('still awards a floor for an unrelated genre', () => {
     // Not zero: a big, highly-engaged creator from another vertical is worth
     // showing to a brand, just not worth ranking above an on-genre one.
-    expect(pointsFor('genre', creator({ genre: 'finance' }), campaign({ targetGenre: 'fitness' })))
-      .toBe(8);
+    expect(
+      pointsFor('genre', creator({ genre: 'finance' }), campaign({ targetGenre: 'fitness' })),
+    ).toBe(8);
   });
 
   it('treats adjacency as symmetric', () => {
-    const forwards = pointsFor('genre', creator({ genre: 'gaming' }), campaign({ targetGenre: 'tech' }));
-    const backwards = pointsFor('genre', creator({ genre: 'tech' }), campaign({ targetGenre: 'gaming' }));
+    const forwards = pointsFor(
+      'genre',
+      creator({ genre: 'gaming' }),
+      campaign({ targetGenre: 'tech' }),
+    );
+    const backwards = pointsFor(
+      'genre',
+      creator({ genre: 'tech' }),
+      campaign({ targetGenre: 'gaming' }),
+    );
     expect(forwards).toBe(backwards);
   });
 });
@@ -89,7 +100,10 @@ describe('fit score totals', () => {
   it('always equals the sum of its components', () => {
     // The UI renders the breakdown under the headline number. A total that does
     // not visibly add up reads as a broken product.
-    const result = scoreMatch(creator({ followerCount: 137_000, engagementRate: 0.051 }), campaign());
+    const result = scoreMatch(
+      creator({ followerCount: 137_000, engagementRate: 0.051 }),
+      campaign(),
+    );
     const summed = result.fit.components.reduce((total, c) => total + c.points, 0);
 
     expect(result.fit.score).toBe(summed);
@@ -121,10 +135,12 @@ describe('eligibility', () => {
   it('blocks an off-genre creator only when the brand asked for strict genre', () => {
     const offGenre = creator({ genre: 'beauty' });
 
-    expect(scoreMatch(offGenre, campaign({ targetGenre: 'fitness', strictGenre: false })).eligible)
-      .toBe(true);
-    expect(scoreMatch(offGenre, campaign({ targetGenre: 'fitness', strictGenre: true })).eligible)
-      .toBe(false);
+    expect(
+      scoreMatch(offGenre, campaign({ targetGenre: 'fitness', strictGenre: false })).eligible,
+    ).toBe(true);
+    expect(
+      scoreMatch(offGenre, campaign({ targetGenre: 'fitness', strictGenre: true })).eligible,
+    ).toBe(false);
   });
 
   it('treats strict genre as exact, not merely adjacent', () => {

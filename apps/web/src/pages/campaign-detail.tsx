@@ -6,7 +6,14 @@ import { FitBreakdown } from '../components/fit.js';
 import { Button, Card, Chip, ErrorState, Skeleton, Stat } from '../components/ui.js';
 import { ApiError, api } from '../lib/api.js';
 import { useCurrentCreator } from '../lib/current-creator.js';
-import { centsToDollars, dollarsToCents, formatCents, formatDeadline, formatFollowers, formatRate } from '../lib/format.js';
+import {
+  centsToDollars,
+  dollarsToCents,
+  formatCents,
+  formatDeadline,
+  formatFollowers,
+  formatRate,
+} from '../lib/format.js';
 import { useCampaign, useExpireCampaign, useMeta, usePlaceBid } from '../lib/queries.js';
 import { useDebounced } from '../lib/use-debounced.js';
 
@@ -128,7 +135,9 @@ export function CampaignDetailPage() {
 
         <Card className="h-fit">
           <div className="flex flex-col gap-4 p-4 sm:p-6">
-            <h2 className="text-title font-semibold">{myBid ? 'Update your bid' : 'Place a bid'}</h2>
+            <h2 className="text-title font-semibold">
+              {myBid ? 'Update your bid' : 'Place a bid'}
+            </h2>
 
             {!eligible ? (
               <div className="flex flex-col gap-1 rounded-lg border border-border bg-surface-sunken p-4">

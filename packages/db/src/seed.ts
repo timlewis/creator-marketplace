@@ -17,9 +17,7 @@ const DOLLARS = 100;
  * watch close are always minutes away from whenever they actually run this.
  */
 export async function seed(db: Db, now: Date = new Date()): Promise<void> {
-  await db.execute(
-    sql`TRUNCATE TABLE ${bids}, ${campaigns}, ${creators} RESTART IDENTITY CASCADE`,
-  );
+  await db.execute(sql`TRUNCATE TABLE ${bids}, ${campaigns}, ${creators} RESTART IDENTITY CASCADE`);
 
   const creatorRows = await db
     .insert(creators)
@@ -53,8 +51,10 @@ export async function seed(db: Db, now: Date = new Date()): Promise<void> {
     const creatorRow = creatorByHandle.get(seedBid.creatorHandle);
     const campaignRow = campaignByKey.get(seedBid.campaignKey);
 
-    if (!creatorRow) throw new Error(`Seed bid references unknown creator ${seedBid.creatorHandle}`);
-    if (!campaignRow) throw new Error(`Seed bid references unknown campaign ${seedBid.campaignKey}`);
+    if (!creatorRow)
+      throw new Error(`Seed bid references unknown creator ${seedBid.creatorHandle}`);
+    if (!campaignRow)
+      throw new Error(`Seed bid references unknown campaign ${seedBid.campaignKey}`);
 
     const match = scoreMatch(toCreatorProfile(creatorRow), toCampaignView(campaignRow));
 

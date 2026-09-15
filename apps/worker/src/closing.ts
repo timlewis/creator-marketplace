@@ -1,4 +1,4 @@
-import { ALGORITHM_VERSION, selectWinners } from '@marketplace/core';
+import { selectWinners } from '@marketplace/core';
 import type { AuctionBid, AuctionOutcome, LossReason } from '@marketplace/core';
 import { bids, campaignClosures, campaigns } from '@marketplace/db';
 import type { Db } from '@marketplace/db';

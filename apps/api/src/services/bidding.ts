@@ -1,6 +1,12 @@
 import { scoreMatch, selectWinners } from '@marketplace/core';
 import type { AuctionBid, AuctionPlacement, FitComponent } from '@marketplace/core';
-import { bids, campaignClosures, campaigns, toCampaignView, toCreatorProfile } from '@marketplace/db';
+import {
+  bids,
+  campaignClosures,
+  campaigns,
+  toCampaignView,
+  toCreatorProfile,
+} from '@marketplace/db';
 import type { CampaignRow, CreatorRow, Db } from '@marketplace/db';
 import { and, desc, eq, ne } from 'drizzle-orm';
 import { badRequest, biddingClosed, ineligible } from '../errors.js';
@@ -186,15 +192,13 @@ export async function previewBid(
     budgetCents: campaign.budgetCents,
     maxWinners: campaign.maxWinners,
     bids: [
-      ...others.map(
-        (row): AuctionBid => ({
-          id: row.id,
-          creatorId: row.creatorId,
-          amountCents: row.amountCents,
-          fitScore: row.fitScore,
-          createdAt: row.createdAt,
-        }),
-      ),
+      ...others.map((row): AuctionBid => ({
+        id: row.id,
+        creatorId: row.creatorId,
+        amountCents: row.amountCents,
+        fitScore: row.fitScore,
+        createdAt: row.createdAt,
+      })),
       hypothetical,
     ],
   });

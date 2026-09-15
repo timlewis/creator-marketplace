@@ -31,9 +31,9 @@ export async function buildApp(db: Db, config: Config): Promise<FastifyInstance>
     }
 
     request.log.error({ err: error, path: request.url }, 'Unhandled error');
-    return reply.status(500).send(
-      toErrorBody(new AppError(500, 'INTERNAL_ERROR', 'Something went wrong on our end.')),
-    );
+    return reply
+      .status(500)
+      .send(toErrorBody(new AppError(500, 'INTERNAL_ERROR', 'Something went wrong on our end.')));
   });
 
   app.setNotFoundHandler((request, reply) =>
