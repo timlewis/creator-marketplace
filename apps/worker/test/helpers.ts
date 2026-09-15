@@ -1,9 +1,8 @@
 import { bids, campaigns, createDb, createPool, creators } from '@marketplace/db';
-import type { Db } from '@marketplace/db';
+import type { Db, DbPool } from '@marketplace/db';
 import type { Genre } from '@marketplace/core';
 import { sql } from 'drizzle-orm';
 import { userInfo } from 'node:os';
-import type pg from 'pg';
 
 export function testDatabaseUrl(): string {
   return (
@@ -14,7 +13,7 @@ export function testDatabaseUrl(): string {
 
 export interface TestHarness {
   db: Db;
-  pool: pg.Pool;
+  pool: DbPool;
   close: () => Promise<void>;
 }
 

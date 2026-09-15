@@ -42,7 +42,7 @@ export async function buildApp(db: Db, config: Config): Promise<FastifyInstance>
       .send(toErrorBody(new AppError(404, 'NOT_FOUND', `No route for ${request.url}`))),
   );
 
-  registerHealthRoutes(app, db);
+  registerHealthRoutes(app, db, { devRoutesEnabled: config.ENABLE_DEV_ROUTES });
   registerCreatorRoutes(app, db);
   registerCampaignRoutes(app, db);
 

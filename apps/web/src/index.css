@@ -1,0 +1,127 @@
+@import 'tailwindcss';
+
+/**
+ * Four type sizes, two weights, spacing on a 4/8 grid, and a 60/30/10 split of
+ * neutral / ink / accent. The constraint is the point: every screen in this app
+ * is built from the same handful of decisions, so nothing needs re-deciding.
+ */
+@theme {
+  /* 60% - neutral ground */
+  --color-background: oklch(0.99 0.004 95);
+  --color-surface: oklch(1 0 0);
+  --color-surface-sunken: oklch(0.975 0.005 95);
+
+  /* 30% - ink */
+  --color-foreground: oklch(0.22 0.012 265);
+  --color-muted: oklch(0.53 0.014 265);
+  --color-border: oklch(0.915 0.006 265);
+  --color-border-strong: oklch(0.85 0.008 265);
+
+  /* 10% - accent, reserved for the primary action and the fit score */
+  --color-accent: oklch(0.53 0.185 275);
+  --color-accent-hover: oklch(0.47 0.19 275);
+  --color-accent-soft: oklch(0.955 0.025 275);
+  --color-accent-foreground: oklch(0.99 0 0);
+
+  /* Semantic outcome colours. Small surfaces only, so the 10% rule holds. */
+  --color-won: oklch(0.52 0.12 155);
+  --color-won-soft: oklch(0.955 0.035 155);
+  --color-pending: oklch(0.58 0.12 75);
+  --color-pending-soft: oklch(0.965 0.04 75);
+  --color-lost: oklch(0.55 0.015 265);
+  --color-lost-soft: oklch(0.96 0.004 265);
+  --color-danger: oklch(0.55 0.19 25);
+  --color-danger-soft: oklch(0.96 0.03 25);
+
+  /* Exactly four sizes. */
+  --text-display: 1.5rem;
+  --text-display--line-height: 2rem;
+  --text-display--letter-spacing: -0.02em;
+  --text-title: 1.125rem;
+  --text-title--line-height: 1.6rem;
+  --text-title--letter-spacing: -0.01em;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.4rem;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1rem;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Monaco, 'Cascadia Code', monospace;
+
+  --radius-card: 0.75rem;
+}
+
+/*
+ * Follows the operating system. There is no in-app toggle: that would need a
+ * persisted preference and a control in the header, and nothing in this
+ * exercise asks a creator to choose a theme.
+ *
+ * Only the token values change. Every component is written against the token
+ * names, so neither theme is the "real" one that the other patches.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: oklch(0.19 0.012 265);
+    --color-surface: oklch(0.235 0.014 265);
+    --color-surface-sunken: oklch(0.21 0.013 265);
+
+    --color-foreground: oklch(0.96 0.004 265);
+    --color-muted: oklch(0.71 0.014 265);
+    --color-border: oklch(0.31 0.014 265);
+    --color-border-strong: oklch(0.4 0.016 265);
+
+    --color-accent: oklch(0.7 0.16 275);
+    --color-accent-hover: oklch(0.76 0.15 275);
+    --color-accent-soft: oklch(0.29 0.055 275);
+    --color-accent-foreground: oklch(0.16 0.02 275);
+
+    --color-won: oklch(0.72 0.13 155);
+    --color-won-soft: oklch(0.28 0.05 155);
+    --color-pending: oklch(0.78 0.13 75);
+    --color-pending-soft: oklch(0.3 0.05 75);
+    --color-lost: oklch(0.68 0.012 265);
+    --color-lost-soft: oklch(0.27 0.008 265);
+    --color-danger: oklch(0.7 0.16 25);
+    --color-danger-soft: oklch(0.3 0.06 25);
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  html {
+    background-color: var(--color-background);
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.4rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Numbers that get compared down a column should line up. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

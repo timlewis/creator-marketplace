@@ -2,6 +2,9 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
 import * as schema from './schema.js';
 
+/** The connection pool, re-exported so consumers never import the driver directly. */
+export type DbPool = pg.Pool;
+
 export type Db = ReturnType<typeof createDb>;
 
 /** A transaction handle, for functions that must run inside one. */

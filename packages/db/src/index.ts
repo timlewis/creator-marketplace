@@ -12,7 +12,7 @@ export {
 export type { BidRow, CampaignClosureRow, CampaignRow, CreatorRow } from './schema.js';
 
 export { createDb, createPool } from './client.js';
-export type { Db, DbExecutor, DbTransaction } from './client.js';
+export type { Db, DbExecutor, DbPool, DbTransaction } from './client.js';
 
 export { bpsToRate, rateToBps, toCampaignView, toCreatorProfile } from './mappers.js';
 export type { CampaignView } from './mappers.js';
