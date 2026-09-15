@@ -1,0 +1,28 @@
+{
+  "name": "@marketplace/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.typecheck.json",
+    "predev": "pnpm --filter @marketplace/core --filter @marketplace/db build",
+    "dev": "tsx watch --env-file-if-exists=../../.env src/main.ts",
+    "start": "node dist/main.js",
+    "close:once": "tsx --env-file-if-exists=../../.env src/main.ts --once",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@marketplace/core": "workspace:*",
+    "@marketplace/db": "workspace:*",
+    "drizzle-orm": "^0.44.7",
+    "pino": "^9.13.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.10",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

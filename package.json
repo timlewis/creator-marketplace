@@ -15,9 +15,10 @@
     "format:check": "prettier --check .",
     "test": "pnpm -r test",
     "test:unit": "pnpm --filter @marketplace/core test",
-    "db:migrate": "pnpm --filter @marketplace/api db:migrate",
-    "db:seed": "pnpm --filter @marketplace/api db:seed",
-    "dev": "pnpm -r --parallel dev"
+    "db:migrate": "pnpm --filter @marketplace/db db:migrate",
+    "db:seed": "pnpm --filter @marketplace/db db:seed",
+    "dev": "pnpm -r --parallel dev",
+    "db:generate": "pnpm --filter @marketplace/db db:generate"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
