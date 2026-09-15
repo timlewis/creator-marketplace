@@ -115,10 +115,13 @@ function validate(input: SelectWinnersInput): void {
  * further down can still use the leftover budget. Stopping early would leave
  * money unspent and a willing creator unbooked for no reason.
  *
- * Greedy rather than an exact knapsack, deliberately. See the README: the rule
- * has to be explainable to the creator who lost, and it has to reward lowering
- * your price or raising your fit monotonically. An optimal solver satisfies
- * neither, and buys a few percent of budget efficiency in exchange.
+ * Greedy rather than an exact knapsack, deliberately. Ranking on a single
+ * scalar means there is always a clearing rate - the weakest funded bid's
+ * fit-per-dollar - that a losing creator can be told and can act on. An exact
+ * solver packs a few percent more value into the same budget but admits no such
+ * threshold, because membership depends on how bids happen to fit together. In
+ * a two-sided marketplace an explainable rule is worth more than an optimal
+ * one. See the README for the full argument.
  */
 export function selectWinners(input: SelectWinnersInput): AuctionOutcome {
   validate(input);

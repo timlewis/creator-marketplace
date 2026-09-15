@@ -200,8 +200,9 @@ describe('POST /api/campaigns/:id/bid-preview', () => {
         })
         .then((r) => json<BidPreview>(r));
 
-    // Same fit as the rival, so undercutting wins and overpaying loses. This is
-    // the monotonicity the greedy rule guarantees, visible to the creator.
+    // Same fit as the rival, so the comparison comes down to price alone:
+    // undercutting wins and overpaying loses. This is the behaviour the preview
+    // panel relies on when it quotes a creator a price that would clear.
     expect((await preview(30_000)).wouldWin).toBe(true);
     expect((await preview(90_000)).wouldWin).toBe(false);
   });
