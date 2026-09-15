@@ -1,0 +1,18 @@
+{{ .Chart.Name }} {{ .Chart.AppVersion }} installed as {{ .Release.Name }}.
+
+Deployed:
+  - api      {{ .Values.api.replicaCount }} replica(s)
+  - web      {{ .Values.web.replicaCount }} replica(s)
+  - worker   CronJob "{{ .Values.worker.schedule }}", concurrencyPolicy {{ .Values.worker.concurrencyPolicy }}
+
+Check the closing job is keeping up. This is the number worth alerting on:
+a campaign past its deadline and still open is a job that is not running,
+and unlike "nothing closed recently" it reads as a fault at any traffic level.
+
+  kubectl -n {{ .Release.Namespace }} logs -l app.kubernetes.io/component=worker --tail=50
+
+{{- if .Values.api.enableDevRoutes }}
+
+WARNING: api.enableDevRoutes is true. The /api/dev routes can pull campaign
+deadlines forward. Set it to false outside a demo environment.
+{{- end }}

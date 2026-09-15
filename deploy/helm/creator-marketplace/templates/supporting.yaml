@@ -1,0 +1,61 @@
+{{- if and (not .Values.database.existingSecret) .Values.database.url }}
+# Only rendered when a URL is passed inline. Prefer database.existingSecret:
+# a value set here is stored in the Helm release and visible to anything that
+# can read it.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "creator-marketplace.fullname" . }}-db
+  labels:
+    {{- include "creator-marketplace.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  DATABASE_URL: {{ .Values.database.url | quote }}
+{{- end }}
+{{- if .Values.podDisruptionBudget.enabled }}
+---
+# Keeps a node drain from taking the whole API down at once.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "creator-marketplace.fullname" . }}-api
+  labels:
+    {{- include "creator-marketplace.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: api
+{{- end }}
+{{- if .Values.ingress.enabled }}
+---
+# The frontend serves the app and reverse-proxies /api to the application
+# server, so both arrive on one origin and the browser never makes a
+# cross-origin request.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "creator-marketplace.fullname" . }}
+  labels:
+    {{- include "creator-marketplace.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- with .Values.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "creator-marketplace.fullname" . }}-web
+                port:
+                  name: http
+{{- end }}

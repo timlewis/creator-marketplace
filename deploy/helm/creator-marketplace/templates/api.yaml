@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "creator-marketplace.fullname" . }}-api
+  labels:
+    {{- include "creator-marketplace.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  replicas: {{ .Values.api.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: api
+  template:
+    metadata:
+      labels:
+        {{- include "creator-marketplace.labels" . | nindent 8 }}
+        app.kubernetes.io/component: api
+    spec:
+      securityContext:
+        {{- include "creator-marketplace.podSecurityContext" . | nindent 8 }}
+      # Longer than the readiness probe takes to pull a pod from the endpoints
+      # list, so in-flight requests drain before the process is signalled.
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: api
+          image: {{ include "creator-marketplace.image" (dict "Values" .Values "Chart" .Chart "component" "api") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- include "creator-marketplace.containerSecurityContext" . | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.api.port }}
+          env:
+            {{- include "creator-marketplace.databaseEnv" . | nindent 12 }}
+            - name: PORT
+              value: {{ .Values.api.port | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.api.logLevel | quote }}
+            - name: ENABLE_DEV_ROUTES
+              value: {{ .Values.api.enableDevRoutes | quote }}
+          # Liveness never touches the database: a database blip should take
+          # pods out of rotation, not restart them in a loop.
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /readyz, port: http }
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          # Covers a slow first connection to the database without giving a
+          # genuinely stuck process an indefinite grace period.
+          startupProbe:
+            httpGet: { path: /healthz, port: http }
+            failureThreshold: 30
+            periodSeconds: 2
+          resources:
+            {{- toYaml .Values.api.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "creator-marketplace.fullname" . }}-api
+  labels:
+    {{- include "creator-marketplace.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.api.port }}
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: api

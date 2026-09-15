@@ -1,0 +1,57 @@
+# The auction closing job.
+#
+# `concurrencyPolicy: Forbid` stops Kubernetes starting a second run while one
+# is still going. That is a cost control, not the safety mechanism. Closing is
+# safe to run concurrently because of three guards in the database - the status
+# predicate inside the locked read, FOR UPDATE SKIP LOCKED on the campaign row,
+# and the primary key on campaign_closures - and it has to be, because Forbid
+# would not protect us from an operator running the job by hand during an
+# incident, from a second cluster, or from a missed-schedule catch-up.
+#
+# See apps/worker/src/closing.ts. The same entry point runs here with --once as
+# runs as a long-lived loop in docker compose.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "creator-marketplace.fullname" . }}-close-auctions
+  labels:
+    {{- include "creator-marketplace.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  schedule: {{ .Values.worker.schedule | quote }}
+  concurrencyPolicy: {{ .Values.worker.concurrencyPolicy }}
+  # If the controller was down, close what is due now rather than replaying a
+  # backlog of identical passes - each pass already picks up everything overdue.
+  startingDeadlineSeconds: 60
+  successfulJobsHistoryLimit: {{ .Values.worker.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.worker.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: {{ .Values.worker.activeDeadlineSeconds }}
+      template:
+        metadata:
+          labels:
+            {{- include "creator-marketplace.labels" . | nindent 12 }}
+            app.kubernetes.io/component: worker
+        spec:
+          # A failed pass is retried by the next schedule anyway, but retrying
+          # within the job closes overdue auctions sooner after a blip.
+          restartPolicy: Never
+          securityContext:
+            {{- include "creator-marketplace.podSecurityContext" . | nindent 12 }}
+          containers:
+            - name: close-auctions
+              image: {{ include "creator-marketplace.image" (dict "Values" .Values "Chart" .Chart "component" "worker") }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                {{- include "creator-marketplace.containerSecurityContext" . | nindent 16 }}
+              args: ['--once']
+              env:
+                {{- include "creator-marketplace.databaseEnv" . | nindent 16 }}
+                - name: LOG_LEVEL
+                  value: {{ .Values.worker.logLevel | quote }}
+                - name: CLOSE_BATCH_SIZE
+                  value: {{ .Values.worker.batchSize | quote }}
+              resources:
+                {{- toYaml .Values.worker.resources | nindent 16 }}

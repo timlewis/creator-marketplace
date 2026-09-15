@@ -1,0 +1,68 @@
+# Defaults describe a small production install. Anything environment-specific
+# (image tags, hostnames, the database secret) is expected to come from a
+# values file per environment rather than from edits to this one.
+
+image:
+  registry: ghcr.io
+  repository: example-org/creator-marketplace
+  tag: '' # defaults to .Chart.AppVersion
+  pullPolicy: IfNotPresent
+
+api:
+  replicaCount: 2
+  port: 3000
+  logLevel: info
+  # The demo deadline control. Must stay false in any real environment.
+  enableDevRoutes: false
+  resources:
+    requests: { cpu: 100m, memory: 192Mi }
+    limits: { memory: 512Mi }
+
+web:
+  replicaCount: 2
+  port: 8080
+  resources:
+    requests: { cpu: 25m, memory: 64Mi }
+    limits: { memory: 128Mi }
+
+worker:
+  # Every minute. The interval only affects how soon after its deadline an
+  # auction closes; it has nothing to do with whether closing is correct.
+  schedule: '* * * * *'
+  batchSize: 100
+  logLevel: info
+  # A run that overlaps the previous one is safe - the database guards see to
+  # that - but there is no reason to pay for it.
+  concurrencyPolicy: Forbid
+  # Long enough to cover a slow pass, short enough that a wedged job is
+  # replaced rather than left holding a connection.
+  activeDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  resources:
+    requests: { cpu: 50m, memory: 128Mi }
+    limits: { memory: 384Mi }
+
+database:
+  # Provide exactly one. An existing secret is preferred: a URL set here lands
+  # in the release manifest and in anything that scrapes it.
+  existingSecret: ''
+  existingSecretKey: DATABASE_URL
+  url: ''
+
+migrations:
+  # Runs as a pre-upgrade hook so the schema is in place before new pods roll,
+  # and so exactly one migrator runs per release rather than one per replica.
+  enabled: true
+  backoffLimit: 1
+
+ingress:
+  enabled: false
+  className: nginx
+  host: marketplace.example.com
+  annotations: {}
+  tls: []
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1

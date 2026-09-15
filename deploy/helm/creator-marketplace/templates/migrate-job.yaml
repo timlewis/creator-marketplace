@@ -1,0 +1,40 @@
+{{- if .Values.migrations.enabled }}
+# Migrations run once per release, before new pods roll.
+#
+# Deliberately not run on application boot: every replica would migrate at the
+# same time during a rollout, and the resulting lock contention shows up as a
+# failed deploy rather than as the design mistake it is.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "creator-marketplace.fullname" . }}-migrate-{{ .Release.Revision }}
+  labels:
+    {{- include "creator-marketplace.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migrate
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: '-5'
+    # Kept on failure so the logs survive to be read. Successful runs are
+    # cleaned up to stop the namespace filling with completed jobs.
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.migrations.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        {{- include "creator-marketplace.labels" . | nindent 8 }}
+        app.kubernetes.io/component: migrate
+    spec:
+      restartPolicy: Never
+      securityContext:
+        {{- include "creator-marketplace.podSecurityContext" . | nindent 8 }}
+      containers:
+        - name: migrate
+          image: {{ include "creator-marketplace.image" (dict "Values" .Values "Chart" .Chart "component" "api") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- include "creator-marketplace.containerSecurityContext" . | nindent 12 }}
+          command: ['node', 'packages/db/dist/migrate.js']
+          env:
+            {{- include "creator-marketplace.databaseEnv" . | nindent 12 }}
+{{- end }}
