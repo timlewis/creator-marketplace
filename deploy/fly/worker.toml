@@ -1,0 +1,39 @@
+# Closing worker, deployed as its own Fly app so that it is visibly a separate
+# process from the API rather than a thread inside it.
+#
+#   fly deploy --config deploy/fly/worker.toml
+#
+# It runs the long-lived loop here rather than a scheduler, because Fly has no
+# CronJob equivalent and adding one would be a third moving piece for no gain.
+# The Kubernetes chart models the production shape as a CronJob with --once.
+# Both call the same closeDueCampaigns, and neither relies on the scheduler for
+# correctness - the database guards do that. See README.
+app = 'creator-marketplace-worker'
+primary_region = 'ams'
+
+[build]
+  dockerfile = '../../Dockerfile'
+  build-target = 'worker'
+
+[env]
+  LOG_LEVEL = 'info'
+  CLOSE_INTERVAL_MS = '10000'
+  HEALTH_PORT = '3001'
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = '10s'
+    interval = '30s'
+    method = 'GET'
+    timeout = '5s'
+    path = '/healthz'
+
+[[vm]]
+  size = 'shared-cpu-1x'
+  memory = '512mb'

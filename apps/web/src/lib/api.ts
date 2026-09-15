@@ -16,6 +16,17 @@ import type {
  * written for a creator to read, so components show it directly rather than
  * translating error codes into prose a second time.
  */
+/**
+ * Where the application server lives.
+ *
+ * Empty in the default setup, because nginx (in Docker) and the Vite dev proxy
+ * both put the API on the same origin as the page - which keeps the browser
+ * from ever making a cross-origin request. It is set only when the two are
+ * genuinely split, as with a static host in front of a separately deployed API,
+ * and then the server's CORS_ORIGIN has to name the frontend's origin.
+ */
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -32,7 +43,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
 
   try {
-    response = await fetch(path, {
+    response = await fetch(`${API_BASE}${path}`, {
       ...init,
       headers: { 'content-type': 'application/json', ...init?.headers },
     });
