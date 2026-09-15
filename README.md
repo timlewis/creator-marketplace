@@ -10,6 +10,11 @@ on its own. Nothing touches the database by hand at any point.
 
 ---
 
+**Live demo:** https://creator-marketplace-b7e.pages.dev — frontend on
+Cloudflare Pages, application server and closing worker on Fly, Postgres on
+Fly. Seeded campaigns close a few minutes apart, so auctions resolve while you
+are looking at them.
+
 ## Running it
 
 **Everything, one command:**

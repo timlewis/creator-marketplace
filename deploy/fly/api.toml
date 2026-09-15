@@ -1,7 +1,7 @@
 # Application server. Deploy from the repository root:
 #   fly deploy --config deploy/fly/api.toml
 app = 'creator-marketplace-api'
-primary_region = 'ams'
+primary_region = 'fra'
 
 [build]
   dockerfile = '../../Dockerfile'

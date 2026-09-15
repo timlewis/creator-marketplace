@@ -9,7 +9,7 @@
 # Both call the same closeDueCampaigns, and neither relies on the scheduler for
 # correctness - the database guards do that. See README.
 app = 'creator-marketplace-worker'
-primary_region = 'ams'
+primary_region = 'fra'
 
 [build]
   dockerfile = '../../Dockerfile'

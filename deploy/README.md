@@ -1,5 +1,7 @@
 # Deploying
 
+**Live demo:** https://creator-marketplace-b7e.pages.dev
+
 Two targets are configured. They deliberately differ, and the difference is the
 point: the same code runs under both, because nothing about correctness depends
 on how the closing job is scheduled.
@@ -37,8 +39,12 @@ fly apps create creator-marketplace-api
 fly apps create creator-marketplace-worker
 
 # Both processes talk to the same database.
-fly secrets set DATABASE_URL='postgresql://...' -a creator-marketplace-api
-fly secrets set DATABASE_URL='postgresql://...' -a creator-marketplace-worker
+# `postgres attach` creates a user per app and sets DATABASE_URL on each.
+# Pass the same --database-name so both point at one database.
+fly postgres attach creator-marketplace-db --app creator-marketplace-api \
+  --database-name creator_marketplace --database-user marketplace_api
+fly postgres attach creator-marketplace-db --app creator-marketplace-worker \
+  --database-name creator_marketplace --database-user marketplace_worker
 
 # The API must accept the frontend's origin, since Pages serves it from a
 # different host than Fly serves the API.
@@ -74,6 +80,35 @@ curl https://creator-marketplace-worker.fly.dev/metrics # marketplace_campaigns_
 
 `marketplace_campaigns_overdue` is the one to watch. Anything above zero for
 more than a couple of minutes means the closing job is not running.
+
+### Two things about this deployment that would be wrong in production
+
+**`fly postgres attach` creates superusers.** The two roles above look like
+least privilege and are not: both come out with `rolsuper = true`, so the
+separation is cosmetic. A real install would create the roles by hand, grant
+the worker only `SELECT, INSERT, UPDATE` on the relevant tables, and set
+`ALTER DEFAULT PRIVILEGES` so later migrations stay covered.
+
+**`ENABLE_DEV_ROUTES` is on.** The demo needs the deadline control. Nothing
+else should have it.
+
+### The worker runs two machines, and that is the interesting part
+
+Fly creates a second machine for availability by default, so this deployment
+runs **two independent closing loops against one database**, every ten seconds.
+That is unusual for a scheduled job and it is left in place deliberately,
+because it exercises the concurrency guards continuously rather than only under
+test. After the first four auctions closed:
+
+```
+duplicate closures:                  0
+closed campaigns with pending bids:  0
+any award over budget:               0
+overdue and still open:              0
+```
+
+Scale it to one with `fly scale count 1 -a creator-marketplace-worker` if you
+would rather not pay for the demonstration.
 
 ### Re-seeding
 
