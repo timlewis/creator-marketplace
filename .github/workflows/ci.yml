@@ -57,6 +57,33 @@ jobs:
       # Runs sequentially: the API and worker suites share the database above.
       - run: pnpm test
 
+  chart:
+    name: Validate Helm chart
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+
+      - run: helm lint deploy/helm/creator-marketplace --set database.existingSecret=marketplace-db
+
+      # Renders with an ingress so every template is exercised, not just the
+      # ones the defaults happen to enable.
+      - name: Render manifests
+        run: |
+          helm template ci deploy/helm/creator-marketplace \
+            --set database.existingSecret=marketplace-db \
+            --set ingress.enabled=true > /dev/null
+
+      # The chart is meant to refuse to render rather than deploy pods that
+      # come up without a database and fail somewhere less obvious.
+      - name: Fail without a database configured
+        run: |
+          if helm template ci deploy/helm/creator-marketplace > /dev/null 2>&1; then
+            echo "Chart rendered without a database configured; it should have failed."
+            exit 1
+          fi
+
   images:
     name: Build images
     runs-on: ubuntu-latest

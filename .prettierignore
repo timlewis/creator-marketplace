@@ -2,3 +2,7 @@ node_modules/
 dist/
 coverage/
 pnpm-lock.yaml
+
+# Helm templates are Go templates that happen to have a .yaml extension. They
+# are not parseable as YAML and `helm lint` is what actually validates them.
+deploy/helm/**/templates/
