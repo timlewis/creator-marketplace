@@ -8,12 +8,40 @@ The loop closes end to end. Pick a creator, see campaigns ranked for them,
 place a bid, let the deadline pass, and the bid flips to won or lost in the UI
 on its own. Nothing touches the database by hand at any point.
 
+**Live demo → https://creator-marketplace-b7e.pages.dev**
+
 ---
 
-**Live demo:** https://creator-marketplace-b7e.pages.dev — frontend on
-Cloudflare Pages, application server and closing worker on Fly, Postgres on
-Fly. Seeded campaigns close a few minutes apart, so auctions resolve while you
-are looking at them.
+## If you only have a few minutes
+
+**Click.** Open the demo, pick **Maya Okonkwo**, open _Spring strength
+challenge_ and move the price up and down. The panel tells you whether you would
+win, at what rank, and — when you would lose on price — the number that would
+clear the current bar. That is the real auction being run against the bids that
+exist, by the same function the closing job uses.
+
+**Read.** Two files carry the design:
+
+- [`packages/core/src/auction.ts`](packages/core/src/auction.ts) — the selection
+  rule. Pure, dependency-free, and imported by both the API and the worker, so
+  the rule a creator is shown is the rule the auction is decided by.
+- [`apps/worker/src/closing.ts`](apps/worker/src/closing.ts) — the closing job
+  and the three database guards that make it safe to run twice.
+
+**Run.** `docker compose up --build`, then `pnpm test`. The test worth reading is
+`closes exactly once when several workers run at the same instant`, in
+[`apps/worker/test/closing.test.ts`](apps/worker/test/closing.test.ts) — four
+independent connections racing for the same campaigns.
+
+> **If the demo looks empty:** seeded auctions close 2 to 9 minutes after
+> seeding, so once they have all resolved there is nothing left open. Reset the
+> clock with:
+>
+> ```bash
+> curl -X POST https://creator-marketplace-api.fly.dev/api/dev/reseed
+> ```
+
+---
 
 ## Running it
 
@@ -52,33 +80,34 @@ The integration tests need a database. They default to
 They run sequentially across the workspace because the API and worker suites
 share one database and truncate between tests.
 
-Deploying it is covered separately in [`deploy/README.md`](deploy/README.md),
-which has both targets: the Helm chart, and the hosted demo on Fly plus
-Cloudflare Pages.
+Deploying it is covered separately in [`deploy/README.md`](deploy/README.md):
+the Helm chart, and the hosted demo (Cloudflare Pages for the frontend, Fly for
+the application server, closing worker and Postgres).
 
 ---
 
 ## The 60-second demo
 
-1. Open http://localhost:8080 and pick **Maya Okonkwo** (fitness, 128k).
-2. On **Campaigns**, note the ranking. _Protein bar relaunch_ is top at 85, and
-   the three campaigns she is locked out of are at the bottom with the specific
-   reason. Hit **Why this score?** on any card.
-3. Open **Spring strength challenge** and change the price. The panel updates
-   live: at $2,800 it says she would win at rank #1; push it to $5,200 and it
-   says the budget would run out before her bid, and that around $3,851 or less
-   would clear the current bar. That is the real auction being run against the
-   bids that exist, not an estimate.
-4. Place the bid, then use **Expire deadline now** — the demo control that
-   pulls the deadline into the past.
-5. Go to **My bids**. Within about ten seconds the bid flips to **Won** with the
-   rank, without a refresh.
+Works against the live demo or a local `docker compose up` — same build.
 
-Seeded campaigns close at 2, 4, 6 and 9 minutes, so the same thing happens on
-its own if you would rather watch it than trigger it.
+1. Pick **Maya Okonkwo** (fitness, 128k followers, 4.6% engagement).
+2. On **Campaigns**, note the ranking. _Protein bar relaunch_ leads at 85, and
+   the three campaigns she is locked out of sit at the bottom with the specific
+   gap rather than being filtered away. Hit **Why this score?** on any card.
+3. Open **Spring strength challenge** and move the price. At $2,800 the panel
+   says she wins at rank #1; at $5,200 it says the budget would run out before
+   her bid, and that roughly $3,851 or less would clear the current bar.
+4. Place the bid, then hit **Expire deadline now** — the demo control that pulls
+   the deadline into the past through the API. Nothing edits the database.
+5. Open **My bids**. Within about ten seconds the bid flips to **Won**, with the
+   rank, and without a refresh.
 
-To see a loss with a reason, expire _Athleisure capsule drop_: Maya's fit there
-is weak and her $5,200 is priced above what the budget reaches.
+For a loss with a reason, expire _Athleisure capsule drop_: Maya is a weak fit
+there and her seeded $5,200 is priced above what the budget reaches.
+
+Step 4 is a shortcut, not a cheat. The seeded campaigns close on their own 2, 4,
+6 and 9 minutes after seeding, and the deadline control exists only so a
+reviewer does not have to wait for them.
 
 ---
 
@@ -148,7 +177,7 @@ loss reason, and a campaign is closed if and only if it has a `closed_at`.
 
 **Hard eligibility.** Two gates. Below the follower minimum, or off-genre where
 the brand asked for a strict match. A campaign failing a gate is still shown —
-greyed out, with the specific gap ("Needs 50,000 followers — you have 32,400")
+greyed out, with the specific gap ("Needs 50,000 followers - you have 32,400")
 and the score they would earn once they qualify. Filtering it away would leave a
 creator wondering why a brief they heard about is missing. Only the nearest
 failing gate is reported; listing every way someone falls short is discouraging
@@ -178,6 +207,15 @@ Three choices in there are deliberate:
 The total is the sum of the _rounded_ components rather than a separately
 rounded total, so the breakdown in the UI always adds up to the headline number.
 A score whose parts visibly do not sum reads as broken.
+
+**The weights are a prior, not a finding.** 40/35/25 and the shape of each curve
+are my judgement about what a brand is buying, set without data because there is
+none yet. What matters is that they are correctable: `fit_breakdown` is stored
+on every bid, so once there are real impressions and outcomes you can test
+whether the score predicts anything — bid-through rate, win rate, brand
+acceptance — and refit the weights instead of arguing about them. If creators
+bid as readily on a 40 as on an 80, the score is decoration and should be
+replaced rather than tuned.
 
 ---
 
