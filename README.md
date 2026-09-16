@@ -10,6 +10,12 @@ on its own. Nothing touches the database by hand at any point.
 
 **Live demo → https://creator-marketplace-b7e.pages.dev**
 
+![Campaigns ranked for one creator, each with a fit score, budget, slots, live bid count and deadline](docs/matched-campaigns.png)
+
+_A creator never sees a raw list. Campaigns are ranked for them, and the ones
+they are locked out of stay visible with the reason rather than being filtered
+away._
+
 ---
 
 ## If you only have a few minutes
@@ -345,10 +351,20 @@ that actually exist. Nothing is modelled or estimated, so the UI can state a
 verdict plainly rather than hedging. The one caveat it needs — that others can
 still bid — is true and shown.
 
+![Bid form showing a fit breakdown and a live projection: you would not win this, ranked #3 of 4, bidding around $3,851 or less would clear the current bar](docs/bid-preview.png)
+
+_Left: which of the three inputs is holding the score back. Right: the same
+`selectWinners` the closing job runs, against the bids that exist right now._
+
 **Losing tells you by how much.** Where a bid would lose on price, the panel
 works backwards from the current clearing rate to name the number that would
 clear it. Telling someone they lost without telling them by how much is the part
 of most marketplaces that leaves creators guessing.
+
+![Bid list showing one won bid with its rank, one lost bid explaining that the budget ran out and quoting the clearing rate, and one still pending](docs/bid-outcomes.png)
+
+_After the closing job runs. The lost bid gets the rate it needed to beat, not
+just a status._
 
 **Fit is never a bare number.** The ring carries the ranking for someone
 skimming ten campaigns; the breakdown names which of the three inputs is holding
