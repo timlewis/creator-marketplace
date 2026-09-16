@@ -8,7 +8,7 @@ The loop closes end to end. Pick a creator, see campaigns ranked for them,
 place a bid, let the deadline pass, and the bid flips to won or lost in the UI
 on its own. Nothing touches the database by hand at any point.
 
-**Live demo → https://creator-marketplace-b7e.pages.dev**
+**Live demo → [creator-marketplace-b7e.pages.dev](https://creator-marketplace-b7e.pages.dev)**
 
 ![Campaigns ranked for one creator, each with a fit score, budget, slots, live bid count and deadline](docs/matched-campaigns.png)
 
@@ -20,7 +20,7 @@ away._
 
 ## If you only have a few minutes
 
-**Click.** Open the demo, pick **Maya Okonkwo**, open _Spring strength
+**Click.** [Open the demo](https://creator-marketplace-b7e.pages.dev), pick **Maya Okonkwo**, open _Spring strength
 challenge_ and move the price up and down. The panel tells you whether you would
 win, at what rank, and — when you would lose on price — the number that would
 clear the current bar. That is the real auction being run against the bids that

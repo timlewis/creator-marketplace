@@ -1,6 +1,6 @@
 # Deploying
 
-**Live demo:** https://creator-marketplace-b7e.pages.dev
+**Live demo:** [creator-marketplace-b7e.pages.dev](https://creator-marketplace-b7e.pages.dev)
 
 Two targets are configured. They deliberately differ, and the difference is the
 point: the same code runs under both, because nothing about correctness depends
