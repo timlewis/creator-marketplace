@@ -62,6 +62,17 @@ migrations, seeds the demo data, and starts the application server, the closing
 worker and the frontend, in that order, gated on health checks rather than
 sleeps.
 
+**Stopping it:**
+
+```bash
+docker compose down       # stop everything, keep the database
+docker compose down -v    # ...and drop the database volume too
+```
+
+Plain `down` keeps your data, so the next `up` still has any bids you placed.
+Add `-v` to start clean: the next `up` remigrates and reseeds, which is also how
+you reset local deadlines once the seeded auctions have resolved.
+
 **Local development**, against a Postgres you already have:
 
 ```bash
