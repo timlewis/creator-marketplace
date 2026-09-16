@@ -112,8 +112,9 @@ would rather not pay for the demonstration.
 
 ### Re-seeding
 
-Deadlines are relative to seed time, so the demo campaigns go stale once they
-have all closed. Re-seed to reset the clock:
+Deadlines are relative to seed time. Most seeded campaigns are days out so the
+demo survives a review window unattended, but re-seeding resets the clock and
+restores the short one:
 
 ```bash
 fly ssh console -a creator-marketplace-api -C 'node packages/db/dist/seed.js'

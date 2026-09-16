@@ -30,7 +30,16 @@ export interface SeedCampaign {
   minFollowers: number;
   minEngagementBps: number;
   maxWinners: number;
-  /** Minutes from seed time. Small values are the ones a reviewer can watch close. */
+  /**
+   * Minutes from seed time.
+   *
+   * Most of these are days out on purpose. Deadlines are relative to whenever
+   * the data was seeded, so short ones make the demo contradict its own README
+   * within minutes of a reseed - the campaigns the instructions name by title
+   * have to still be there when someone actually reads them. Watching an
+   * auction close is covered by the deadline control instead, which is
+   * instant and does not rot.
+   */
   deadlineInMinutes: number;
 }
 
@@ -147,7 +156,8 @@ export const SEED_CAMPAIGNS: SeedCampaign[] = [
     minFollowers: 20_000,
     minEngagementBps: 400,
     maxWinners: 2,
-    deadlineInMinutes: 2,
+    // the one short deadline: closes unaided a few minutes after seeding
+    deadlineInMinutes: 5,
   },
   {
     key: 'protein-bar',
@@ -161,7 +171,7 @@ export const SEED_CAMPAIGNS: SeedCampaign[] = [
     minFollowers: 40_000,
     minEngagementBps: 250,
     maxWinners: 2,
-    deadlineInMinutes: 4,
+    deadlineInMinutes: 10 * 24 * 60,
   },
   {
     key: 'spring-strength',
@@ -175,7 +185,7 @@ export const SEED_CAMPAIGNS: SeedCampaign[] = [
     minFollowers: 50_000,
     minEngagementBps: 300,
     maxWinners: 3,
-    deadlineInMinutes: 6,
+    deadlineInMinutes: 9 * 24 * 60,
   },
   {
     key: 'athleisure-capsule',
@@ -188,7 +198,7 @@ export const SEED_CAMPAIGNS: SeedCampaign[] = [
     minFollowers: 60_000,
     minEngagementBps: 300,
     maxWinners: 3,
-    deadlineInMinutes: 9,
+    deadlineInMinutes: 11 * 24 * 60,
   },
   {
     key: 'dev-tooling',
@@ -202,7 +212,7 @@ export const SEED_CAMPAIGNS: SeedCampaign[] = [
     minFollowers: 100_000,
     minEngagementBps: 150,
     maxWinners: 2,
-    deadlineInMinutes: 4 * 60,
+    deadlineInMinutes: 12 * 24 * 60,
   },
   {
     key: 'clean-beauty',
@@ -228,7 +238,7 @@ export const SEED_CAMPAIGNS: SeedCampaign[] = [
     minFollowers: 25_000,
     minEngagementBps: 500,
     maxWinners: 4,
-    deadlineInMinutes: 24 * 60,
+    deadlineInMinutes: 8 * 24 * 60,
   },
   {
     key: 'handheld-console',
@@ -241,7 +251,7 @@ export const SEED_CAMPAIGNS: SeedCampaign[] = [
     minFollowers: 250_000,
     minEngagementBps: 200,
     maxWinners: 2,
-    deadlineInMinutes: 2 * 24 * 60,
+    deadlineInMinutes: 14 * 24 * 60,
   },
   {
     key: 'carry-on',
@@ -254,7 +264,7 @@ export const SEED_CAMPAIGNS: SeedCampaign[] = [
     minFollowers: 75_000,
     minEngagementBps: 300,
     maxWinners: 2,
-    deadlineInMinutes: 3 * 24 * 60,
+    deadlineInMinutes: 13 * 24 * 60,
   },
   {
     key: 'studio-monitor',
@@ -267,7 +277,7 @@ export const SEED_CAMPAIGNS: SeedCampaign[] = [
     minFollowers: 100_000,
     minEngagementBps: 350,
     maxWinners: 2,
-    deadlineInMinutes: 5 * 24 * 60,
+    deadlineInMinutes: 15 * 24 * 60,
   },
 ];
 

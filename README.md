@@ -39,9 +39,9 @@ exist, by the same function the closing job uses.
 [`apps/worker/test/closing.test.ts`](apps/worker/test/closing.test.ts) — four
 independent connections racing for the same campaigns.
 
-> **If the demo looks empty:** seeded auctions close 2 to 9 minutes after
-> seeding, so once they have all resolved there is nothing left open. Reset the
-> clock with:
+> **If the demo ever looks thin:** seeded deadlines run from minutes to two
+> weeks out, so the campaigns named above should still be open. If they have
+> all resolved, reset the clock with:
 >
 > ```bash
 > curl -X POST https://creator-marketplace-api.fly.dev/api/dev/reseed
@@ -111,9 +111,12 @@ Works against the live demo or a local `docker compose up` — same build.
 For a loss with a reason, expire _Athleisure capsule drop_: Maya is a weak fit
 there and her seeded $5,200 is priced above what the budget reaches.
 
-Step 4 is a shortcut, not a cheat. The seeded campaigns close on their own 2, 4,
-6 and 9 minutes after seeding, and the deadline control exists only so a
-reviewer does not have to wait for them.
+Step 4 is a shortcut, not a cheat. It moves the deadline through the API and
+then waits for the scheduled worker to notice, exactly as an unattended close
+happens — nothing marks the bid won directly. _Budgeting app beta cohort_ is
+seeded to close a few minutes after seeding if you would rather watch one go
+unaided; the rest are days out so that the campaigns named above are still
+there whenever you read this.
 
 ---
 
