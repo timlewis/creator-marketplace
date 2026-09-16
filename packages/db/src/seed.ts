@@ -10,6 +10,20 @@ import { SEED_BIDS, SEED_CAMPAIGNS, SEED_CREATORS } from './seed-data.js';
 const DOLLARS = 100;
 
 /**
+ * Deterministic ids for seeded rows.
+ *
+ * Reseeding truncates and reinserts, so with generated uuids every id in the
+ * demo changes: a browser remembering which creator it was acting as, and any
+ * bookmarked campaign link, both break. Deriving the id from the row's position
+ * makes a reseed invisible to anything holding a reference.
+ *
+ * Only the seed does this. Real rows get `gen_random_uuid()` from the schema.
+ */
+function stableId(prefix: string, index: number): string {
+  return `${prefix}-0000-4000-8000-${String(index + 1).padStart(12, '0')}`;
+}
+
+/**
  * Wipes and reloads the demo dataset.
  *
  * Destructive by design and only ever invoked explicitly. Deadlines are
@@ -21,13 +35,14 @@ export async function seed(db: Db, now: Date = new Date()): Promise<void> {
 
   const creatorRows = await db
     .insert(creators)
-    .values(SEED_CREATORS.map((c) => ({ ...c })))
+    .values(SEED_CREATORS.map((c, index) => ({ ...c, id: stableId('c0000000', index) })))
     .returning();
 
   const campaignRows = await db
     .insert(campaigns)
     .values(
-      SEED_CAMPAIGNS.map((c) => ({
+      SEED_CAMPAIGNS.map((c, index) => ({
+        id: stableId('ca000000', index),
         brandName: c.brandName,
         title: c.title,
         description: c.description,
