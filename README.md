@@ -8,8 +8,6 @@ The loop closes end to end. Pick a creator, see campaigns ranked for them,
 place a bid, let the deadline pass, and the bid flips to won or lost in the UI
 on its own. Nothing touches the database by hand at any point.
 
-**Live demo → [creator-marketplace-b7e.pages.dev](https://creator-marketplace-b7e.pages.dev)**
-
 ![Campaigns ranked for one creator, each with a fit score, budget, slots, live bid count and deadline](docs/matched-campaigns.png)
 
 _A creator never sees a raw list. Campaigns are ranked for them, and the ones
@@ -20,7 +18,7 @@ away._
 
 ## If you only have a few minutes
 
-**Click.** [Open the demo](https://creator-marketplace-b7e.pages.dev), pick **Maya Okonkwo**, open _Spring strength
+**Click.** [Open the app locally](#running-it), pick **Maya Okonkwo**, open _Spring strength
 challenge_ and move the price up and down. The panel tells you whether you would
 win, at what rank, and — when you would lose on price — the number that would
 clear the current bar. That is the real auction being run against the bids that
@@ -38,14 +36,6 @@ exist, by the same function the closing job uses.
 `closes exactly once when several workers run at the same instant`, in
 [`apps/worker/test/closing.test.ts`](apps/worker/test/closing.test.ts) — four
 independent connections racing for the same campaigns.
-
-> **If the demo ever looks thin:** seeded deadlines run from minutes to two
-> weeks out, so the campaigns named above should still be open. If they have
-> all resolved, reset the clock with:
->
-> ```bash
-> curl -X POST https://creator-marketplace-api.fly.dev/api/dev/reseed
-> ```
 
 ---
 
@@ -105,7 +95,7 @@ the application server, closing worker and Postgres).
 
 ## The 60-second demo
 
-Works against the live demo or a local `docker compose up` — same build.
+Run it locally with `docker compose up --build`, then open http://localhost:8080.
 
 1. Pick **Maya Okonkwo** (fitness, 128k followers, 4.6% engagement).
 2. On **Campaigns**, note the ranking. _Protein bar relaunch_ leads at 85, and

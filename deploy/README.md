@@ -1,7 +1,5 @@
 # Deploying
 
-**Live demo:** [creator-marketplace-b7e.pages.dev](https://creator-marketplace-b7e.pages.dev)
-
 Two targets are configured. They deliberately differ, and the difference is the
 point: the same code runs under both, because nothing about correctness depends
 on how the closing job is scheduled.
@@ -65,7 +63,7 @@ fly ssh console -a creator-marketplace-api -C 'node packages/db/dist/seed.js'
 The API lives on another origin here, so the base URL is baked in at build time.
 
 ```bash
-VITE_API_BASE_URL='https://creator-marketplace-api.fly.dev' \
+VITE_API_BASE_URL='https://<api-app>.fly.dev' \
   pnpm --filter @marketplace/web build
 
 wrangler pages deploy apps/web/dist --project-name creator-marketplace
@@ -74,8 +72,8 @@ wrangler pages deploy apps/web/dist --project-name creator-marketplace
 ### Checks
 
 ```bash
-curl https://creator-marketplace-api.fly.dev/readyz     # {"status":"ready"}
-curl https://creator-marketplace-worker.fly.dev/metrics # marketplace_campaigns_overdue 0
+curl https://<api-app>.fly.dev/readyz     # {"status":"ready"}
+curl https://<worker-app>.fly.dev/metrics # marketplace_campaigns_overdue 0
 ```
 
 `marketplace_campaigns_overdue` is the one to watch. Anything above zero for
